@@ -18,6 +18,8 @@
       label="Usuario"
       :rules="rules"
       hide-details="auto"
+      v-model="user"
+      append-icon="mdi-account"
     ></v-text-field>
     </v-card-text>
 
@@ -26,6 +28,12 @@
       label="Contraseña"
       :rules="rules"
       hide-details="auto"
+      v-model="password"
+      :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+      :type="show ? 'text' : 'password'"
+      class="input-group--focused"
+      @click:append="show = !show"
+
     ></v-text-field>
     </v-card-text>
 
@@ -33,6 +41,7 @@
       <v-btn
         text
         color="teal accent-4"
+        v-on:click="submit()"
       >
         Iniciar sesion
       </v-btn>
@@ -43,7 +52,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-
+import Router from 'vue-router'
 @Component({
   components: {
   },
@@ -52,7 +61,16 @@ import { Component, Vue } from 'vue-property-decorator';
         value => !!value || 'Requerido.',
         value => (value && value.length >= 3) || 'Min 3 caracteres',
       ],
-  })
+      user:"",
+      password:"",
+      show:false,
+        submit:function(){
+            this.user="presione el boton"
+            this.$router.push('/admin')
+            
+        }
+  }),
+  
 })
 export default class LoginComponente extends Vue {}
 </script>
