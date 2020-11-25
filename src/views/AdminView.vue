@@ -18,26 +18,17 @@
         height="500"
         item-height="64"
       > -->
-        <v-list   >
+        <v-list>
             <v-subheader>Archivos</v-subheader>
-            <v-list-item-group
-            v-model="selectedItem"
-            color="primary"
-            style="max-height: 500px; " class="overflow-y-auto"
+            <v-list-item-group v-model="selectedItem" color="primary" style="max-height: 500px; " class="overflow-y-auto"
             >
-            <v-list-item
-                v-for="(item, i) in items"
-                :key="i"
-            >
+            <v-list-item v-for="(item, i) in items" :key="i">
                 <v-list-item-icon>
                 <v-icon v-text="'mdi-pencil'" ></v-icon>
                 </v-list-item-icon>
                 <v-list-item-content v-on:click = "openFile(item)" >
                     <v-list-item-title v-text="item.name"></v-list-item-title>
                 </v-list-item-content>
-                
-                
-
             </v-list-item>
 
             </v-list-item-group>
@@ -48,16 +39,16 @@
 
 
       <v-col >
-        <v-sheet
-          class="pa-12"
-          color="grey lighten-3"
-          elevation="24"
-            style="max-height: 1000px; "
-            height = "1000"
-        >
+          <!-- @click="loader = 'loading'" -->
+        
 
-
-        <v-container fluid >
+        <v-sheet class="pa-12" color="grey lighten-3" elevation="24" style="max-height: 1000px; " height = "1000" >
+        
+        <v-btn v-if="textArea!=null" :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="uploadFile()"  >  
+              Upload  <v-icon right dark> mdi-cloud-upload </v-icon>
+        </v-btn>
+        
+        <v-container fluid v-if="textArea!=null" >
             <!-- label="Label" -->
             <v-textarea
             name="input-7-1"
@@ -99,8 +90,10 @@ export default{
             { text: 'Conversions', icon: 'mdi-flag' },
             { text: 'Conversions', icon: 'mdi-flag' },
             ],
-            textArea:"hola",
-            test:"hola"
+            textArea:null,
+            test:"hola",
+            loading:false,
+            file:null
         }
     },
     methods: {
@@ -131,7 +124,7 @@ export default{
             axios.get('http://127.0.0.1:3333/admin/file', {
                 params: {
                     path:file.path,
-                    toke:"token"
+                    token:"token"
                 }
             })
             .then(response => {
@@ -139,7 +132,34 @@ export default{
                 
                 console.log(response.data);
                 this.$data.textArea = response.data
+                if(response.data == undefined){
+                  this.$data.textArea=""
+                }
+                this.$data.file = file
+                // console.log("soy array "+array[0].name);
+                // return array;
+            })
+            .catch(function (error) {
+                console.log(error);
+            })   
+            
+        },
 
+        uploadFile(){
+            
+            console.log(this.$data.file.path);
+            this.$data.loading = true;
+            // const path = this.$data.file.path
+            // const content = this.$data.file.textArea
+            const post = {
+                    path:this.$data.file.path,
+                    token:"token",
+                    content:this.$data.textArea
+            };
+            axios.post('http://127.0.0.1:3333/admin/file', post ).then(response => {
+               
+                this.$data.loading=false;
+                console.log(response.data);
                 // console.log("soy array "+array[0].name);
                 // return array;
             })
@@ -159,3 +179,41 @@ export default{
 }
 
 </script>
+<style scoped>
+  .custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
