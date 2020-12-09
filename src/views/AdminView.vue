@@ -18,8 +18,13 @@
         height="500"
         item-height="64"
       > -->
+               <UploadFileComponent   @clicked="onClickChild"  v-model="addFile" />
+
         <v-list>
             <v-subheader>Archivos</v-subheader>
+            <v-btn  :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="añadirArchivo()"  >  
+              Subir archivo  <v-icon right dark> mdi-cloud-upload </v-icon>
+        </v-btn>
             <v-list-item-group v-model="selectedItem" color="primary" style="max-height: 500px; " class="overflow-y-auto"
             >
             <v-list-item v-for="(item, i) in items" :key="i">
@@ -45,7 +50,7 @@
         <v-sheet class="pa-12" color="grey lighten-3" elevation="24" style="max-height: 1000px; " height = "1000" >
         
         <v-btn v-if="textArea!=null" :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="uploadFile()"  >  
-              Upload  <v-icon right dark> mdi-cloud-upload </v-icon>
+              Guardar cambios  <v-icon right dark> mdi-cloud-upload </v-icon>
         </v-btn>
         
         <v-container fluid v-if="textArea!=null" >
@@ -74,8 +79,10 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import { Component, Vue } from 'vue-property-decorator';
+import  UploadFileComponent  from "../components/UploadFileComponent.vue";
+
 import axios from 'axios'
 
 
@@ -93,7 +100,8 @@ export default{
             textArea:null,
             test:"hola",
             loading:false,
-            file:null
+            file:null,
+            addFile:false,
         }
     },
     methods: {
@@ -144,9 +152,7 @@ export default{
             })   
             
         },
-
         uploadFile(){
-            
             console.log(this.$data.file.path);
             this.$data.loading = true;
             // const path = this.$data.file.path
@@ -167,6 +173,16 @@ export default{
                 console.log(error);
             })   
             
+        },
+        añadirArchivo(){
+          this.$data.addFile=true;
+        },
+        checkUpload(data){
+          console.log("me cerre");
+          console.log(data);
+        },
+        onClickChild (value) {
+          console.log(value) // someValue
         }
     },
     mounted(){
@@ -175,6 +191,9 @@ export default{
         this.getFiles();
         // console.log(this.$data.item);
         
+    },
+    components: {
+      UploadFileComponent
     }
 }
 
