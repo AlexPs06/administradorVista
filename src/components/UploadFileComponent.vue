@@ -8,14 +8,14 @@
       
       <v-card>
         <v-card-title class="headline">
-          Seleccione un archivo
+          Seleccione un archivo 
         </v-card-title>
         
         <v-card-text>
             <v-file-input
                 chips
                 v-model="files"
-                accept=".txt"
+                accept=".aiml.kb, .txt "
                 label="Archivo"
             ></v-file-input>    
         </v-card-text>
@@ -23,7 +23,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            color="green darken-1"
+            color="error"
             text
             @click="dialog = false"
             v-on:click="notUpload()"
@@ -34,10 +34,9 @@
           <v-btn
             color="green darken-1"
             text
-            @click="dialog = true"
-            v-on:click="upload()"
+            v-on:click="upload(dialog)"
           >
-            Subir
+            Subir {{dialog}}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -46,6 +45,7 @@
 </template>
 
 <script>
+import axios from 'axios'
   export default {
       props:{
           value:Boolean
@@ -62,16 +62,43 @@
         }
     },
     methods:{
-        upload(){
-            this.$emit('clicked', true)
+        upload(dialog){
             // console.log(this.files.name);
-            if(this.files!=null){
+            if(this.files.length!=0){
                 console.log(this.files);
                 const reader = new FileReader()
+                let texto = "";
+                texto ="1"
+                //  reader.onload = e => (texto = e.target.result + texto)    
+                
+                reader.readAsText(this.files);
+                reader.onload = () => {
+                  // this.$data.content = reader.result;
 
-                reader.onload = e => console.log(e.target.result)    
+                  const post = {
+                    content:reader.result,
+                    token:"token",
+                    name:this.files.name 
+                    
+                  };
+                  axios.post('http://127.0.0.1:3333/admin/addFile ', post ).then(response => {
+                      
+                      this.$emit('input', false)
+                      this.$emit('clicked', true)
 
-                reader.readAsText(this.files)    
+                  })
+                  .catch(function (error) {
+                      this.$emit('input', false)
+                      this.$emit('clicked', false)
+                      console.log(error);
+                  })
+
+                }
+                 
+                // console.log(reader.readAsText(this.files));              
+
+                 
+            
             }
         },
         notUpload(){
@@ -82,6 +109,7 @@
     data () {
       return {
         files: [],
+        content:""
       }
     },
   }

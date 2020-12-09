@@ -4,30 +4,54 @@
    <v-container>
     <v-row justify="space-around">
       <v-col cols="12" md="4">
-        <!-- <v-sheet
-          class="pa-12"
-          color="grey lighten-3"
-          elevation="24"
-        > -->
-           <!-- overflow-y: auto; -->
-            <!-- max-height="800" -->
+        
 
-        <!-- <v-virtual-scroll
-        :bench="0"
-        :items="items"
-        height="500"
-        item-height="64"
-      > -->
-               <UploadFileComponent   @clicked="onClickChild"  v-model="addFile" />
+
+
+
+
+
+
+
+  <v-card
+    color="grey lighten-4"
+    flat
+    tile
+    class="d-flex flex-wrap"
+  >
+    <v-toolbar dense>
+      <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> esto falta checar si se queda o se va  -->
+
+      <v-toolbar-title>Archivos</v-toolbar-title>
+      <v-spacer></v-spacer>
+        <!-- <v-text-field  label="Buscar"  hide-details="auto" v-model="search" clearable> </v-text-field> -->
+
+
+      <v-icon>mdi-magnify</v-icon>
+        <v-text-field  label="Buscar"  hide-details="auto" v-model="search" clearable> </v-text-field>
+
+
+
+
+    </v-toolbar>
+  </v-card>
+
+
+
+
+
+
+
+      <UploadFileComponent   @clicked="onClickChild"  v-model="addFile" />
 
         <v-list>
-            <v-subheader>Archivos</v-subheader>
+            <!-- <v-subheader>Archivos</v-subheader> -->
             <v-btn  :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="añadirArchivo()"  >  
               Subir archivo  <v-icon right dark> mdi-cloud-upload </v-icon>
         </v-btn>
             <v-list-item-group v-model="selectedItem" color="primary" style="max-height: 500px; " class="overflow-y-auto"
             >
-            <v-list-item v-for="(item, i) in items" :key="i">
+            <v-list-item   v-for="(item, i) in filteredItems" :key="i">
                 <v-list-item-icon>
                 <v-icon v-text="'mdi-pencil'" ></v-icon>
                 </v-list-item-icon>
@@ -92,19 +116,25 @@ export default{
             elevations: [6, 12, 18],
             selectedItem: null,
             items: [
-            { text: 'Real-Time', icon: 'mdi-pencil' },
-            { text: 'Audience', icon: 'mdi-account' },
-            { text: 'Conversions', icon: 'mdi-flag' },
-            { text: 'Conversions', icon: 'mdi-flag' },
+            { name: 'Real-Time'},
             ],
             textArea:null,
             test:"hola",
             loading:false,
             file:null,
             addFile:false,
+            search:"",
         }
     },
+    computed: {
+    filteredItems() {
+        return this.$data.items.filter((item) =>{
+            return item.name.toLowerCase().match(this.$data.search)  
+        });
+    }
+  },
     methods: {
+      
         getFiles() {
             // console.log(this.$data.test); // Our Vue component
             axios.get('http://127.0.0.1:3333/admin/files', {
@@ -166,8 +196,7 @@ export default{
                
                 this.$data.loading=false;
                 console.log(response.data);
-                // console.log("soy array "+array[0].name);
-                // return array;
+
             })
             .catch(function (error) {
                 console.log(error);
@@ -183,7 +212,11 @@ export default{
         },
         onClickChild (value) {
           console.log(value) // someValue
-        }
+          if (value) {
+            this.getFiles();
+          }
+        },
+       
     },
     mounted(){
         // console.log(process.env.BASE_URL);
