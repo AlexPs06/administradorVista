@@ -7,12 +7,6 @@
         
 
 
-
-
-
-
-
-
   <v-card
     color="grey lighten-4"
     flat
@@ -48,6 +42,9 @@
             <!-- <v-subheader>Archivos</v-subheader> -->
             <v-btn  :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="añadirArchivo()"  >  
               Subir archivo  <v-icon right dark> mdi-cloud-upload </v-icon>
+        </v-btn>
+         <v-btn  :loading="loading" :disabled="loading" color="blue-grey" class="ma-2 white--text" v-on:click ="entrenar()"  >  
+              Entrenar  <v-icon right dark> mdi-cloud-upload </v-icon>
         </v-btn>
             <v-list-item-group v-model="selectedItem" color="primary" style="max-height: 500px; " class="overflow-y-auto"
             >
@@ -88,8 +85,6 @@
             :auto-grow="false"
             ></v-textarea>
         </v-container>
-
-
 
         </v-sheet>
         
@@ -205,6 +200,17 @@ export default{
         },
         añadirArchivo(){
           this.$data.addFile=true;
+        },
+        entrenar(){
+          axios.get('http://127.0.0.2:3333/chatbot/entrenar')
+            .then(response => {
+               
+                
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })  
         },
         checkUpload(data){
           console.log("me cerre");
